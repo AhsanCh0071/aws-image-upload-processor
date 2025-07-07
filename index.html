@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Upload to S3</title>
+</head>
+<body>
+  <h2>Upload Image</h2>
+  <input type="file" id="fileInput" />
+  <button onclick="uploadImage()">Upload</button>
+
+  <script>
+  async function uploadImage() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+    if (!file) return alert("Please select a file");
+
+    const fileName = encodeURIComponent(`original/${file.name}`);
+
+    const contentType = file.type;
+
+    const res = await fetch(`https://u34y93gjbl.execute-api.ap-south-1.amazonaws.com/default/generateuploadURL?filename=${fileName}&contentType=${contentType}`);
+
+    const { uploadUrl } = await res.json();
+
+    await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": contentType
+      },
+      body: file
+    });
+
+    alert("Upload successful!");
+  }
+</script>
+
+</body>
+</html>
